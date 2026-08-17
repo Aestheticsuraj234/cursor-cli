@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { printBanner } from './ui/banner.js';
+import { checkEnvironment } from './config/env.js';
 
 export function createCli() {
     const program = new Command()
@@ -17,6 +18,12 @@ export function createCli() {
     .description("print the banner")
     .action(() => {
         printBanner();
+    })
+
+    program.command("doctor")
+    .description("check the environment")
+    .action(async () => {
+        await checkEnvironment();
     })
 
     return program;
