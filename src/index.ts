@@ -1,1 +1,3 @@
-console.log("Hello World");
+import { createCli } from "./cli.js";
+
+createCli().parse(process.argv);
