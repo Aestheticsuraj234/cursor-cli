@@ -3,6 +3,8 @@ import { printBanner } from './ui/banner.js';
 import { checkEnvironment, requireApiKey } from './config/env.js';
 import { runQuery } from './agent/run-query.js';
 import { CliMode, parseCliMode } from './agent/modes.js';
+import { startChat } from './commands/chat.js';
+import { wakeUp } from './commands/wake-up.js';
 
 
 function parseMode(value: string): CliMode {
@@ -42,6 +44,23 @@ export function createCli() {
         .action(async (prompt: string, opts: { mode: string; verbose: boolean }) => {
             requireApiKey();
             await runQuery(prompt, { mode: parseMode(opts.mode), verbose: opts.verbose });
+        });
+
+    program
+        .command("wake-up")
+        .description("Banner, preflight, mode picker, then chat")
+        .action(async () => {
+            await wakeUp();
+        });
+
+    program
+        .command("chat")
+        .description("Interactive streaming chat session")
+        .option("-m, --mode <mode>", "agent | ask | plan", "agent")
+        .option("-v, --verbose", "Show agent loop message types", false)
+        .action(async (opts: { mode: string; verbose: boolean }) => {
+            requireApiKey();
+            await startChat({ mode: parseMode(opts.mode), verbose: opts.verbose });
         });
 
 
