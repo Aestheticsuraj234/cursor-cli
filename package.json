@@ -21,8 +21,13 @@
   },
   "type": "module",
   "dependencies": {
+    "@types/figlet": "^1.7.0",
     "@types/node": "^26.2.0",
+    "boxen": "^8.0.1",
+    "chalk": "^6.0.0",
     "commander": "^15.0.0",
+    "figlet": "^1.11.4",
+    "ora": "^9.4.1",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   }
