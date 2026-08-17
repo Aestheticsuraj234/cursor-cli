@@ -22,6 +22,7 @@
   "type": "module",
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.233",
+    "@inquirer/prompts": "^8.5.2",
     "@types/figlet": "^1.7.0",
     "@types/node": "^26.2.0",
     "boxen": "^8.0.1",
