@@ -1,6 +1,16 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
+import { handleMessage } from "./message-handler.js";
+import { stopSpinner } from "../ui/spinner.js";
+import { fmt } from "../ui/format.js";
 
-export async function runQuery(prompt: string) {
+
+export type RunQueryOptions = {
+   verbose?: boolean;
+}
+
+export async function runQuery(prompt: string , options: RunQueryOptions = {}) {
+
+    const { verbose = false } = options;
     try {
         for await (const message of query({
             prompt: prompt,
@@ -11,11 +21,11 @@ export async function runQuery(prompt: string) {
                 permissionMode: "acceptEdits"
             }
         })) {
-            if (message.type === "result" && message.subtype === "success") {
-                console.log(message.result);
-            }
+            
+            handleMessage(message , { verbose });
         }
     } catch (error) {
-        console.error("Query failed:", error);
+        stopSpinner();
+        console.error(fmt.error(`Query failed: ${error instanceof Error ? error.message : error}`));
     }
 }

@@ -9,32 +9,35 @@ export function createCli() {
         .description("A CLI for Cursor")
         .version("0.1.0");
 
-        
     program.command("talk")
-    .description("Send a one-shot prompt to the agent")
-    .argument("<prompt>", "The prompt to send to the agent")
-    .action(async(prompt:string)=>{
-        requireApiKey();
-        await runQuery(prompt);
-    })
-
-    program.command("hello")
-        .description("print a greeting")
-        .action(() => {
-            console.log("Hello from the CLI");
+        .description("Send a one-shot prompt to the agent")
+        .argument("<prompt>", "The prompt to send to the agent")
+        .option("-v, --verbose", "Show verbose output")
+        .action(async (prompt: string, options: { verbose?: boolean }) => {
+            requireApiKey();
+            await runQuery(prompt, { verbose: options.verbose });
         })
 
+
+
+
     program.command("banner")
-    .description("print the banner")
-    .action(() => {
-        printBanner();
-    })
+        .description("print the banner")
+        .action(() => {
+            printBanner();
+        })
 
     program.command("doctor")
-    .description("check the environment")
-    .action(async () => {
-        await checkEnvironment();
-    })
+        .description("check the environment")
+        .action(async () => {
+            await checkEnvironment();
+        })
+        
+    program.action(() => {
+        program.help();
+    });
+
+
 
     return program;
 }
