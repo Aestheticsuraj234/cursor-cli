@@ -3,6 +3,7 @@ import { printBanner } from './ui/banner.js';
 import { checkEnvironment, requireApiKey } from './config/env.js';
 import { runQuery } from './agent/run-query.js';
 import { runMultiAgent } from './agent/run-multi.js';
+import { runPipeline } from './agent/run-pipeline.js';
 import { CliMode, parseCliMode } from './agent/modes.js';
 import { parseAgentRoles } from './agent/roles.js';
 import { startChat } from './commands/chat.js';
@@ -94,6 +95,26 @@ export function createCli() {
         .action(async (opts: { verbose: boolean }) => {
             requireApiKey();
             await startMultiChat({ verbose: opts.verbose });
+        });
+
+    program
+        .command("pipeline")
+        .description("Run agents sequentially, passing context between steps")
+        .argument("<task>", "Task to run through the pipeline")
+        .option(
+            "-r, --roles <roles>",
+            `Comma-separated pipeline order: ${AGENT_ROLE_LIST}`,
+            "planner,researcher,coder,reviewer"
+        )
+        .option("-o, --output <file>", "Save transcript markdown (default: .cursor-cli/pipelines/)")
+        .option("-v, --verbose", "Show agent loop message types", false)
+        .action(async (task: string, opts: { roles: string; output?: string; verbose: boolean }) => {
+            requireApiKey();
+            await runPipeline(task, {
+                roles: parseAgentRoles(opts.roles),
+                verbose: opts.verbose,
+                output: opts.output,
+            });
         });
 
 

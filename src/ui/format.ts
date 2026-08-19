@@ -19,6 +19,7 @@ export const fmt = {
   label: (text: string) => chalk.bold.white(text),
   mode: (text: string) => chalk.magenta(text),
   multi: (text: string) => chalk.bold.cyan(text),
+  pipeline: (text: string) => chalk.bold.blue(text),
   agent: (role: AgentRole, text: string) => AGENT_COLORS[role](text),
   agentTag: (label: string, text: string) => chalk.bold(`[${label}]`) + " " + text,
 };
