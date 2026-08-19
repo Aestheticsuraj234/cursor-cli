@@ -42,6 +42,8 @@ export const AGENT_ROLES: Record<AgentRole, RoleConfig> = {
 
 export const DEFAULT_MULTI_ROLES: AgentRole[] = ["planner", "researcher", "coder"];
 
+export const DEFAULT_PIPELINE_ROLES: AgentRole[] = ["planner", "researcher", "coder", "reviewer"];
+
 export function parseAgentRole(value: string): AgentRole | null {
     if (value in AGENT_ROLES) {
         return value as AgentRole;
@@ -71,4 +73,34 @@ export function parseAgentRoles(value: string): AgentRole[] {
 
 export function buildRolePrompt(role: AgentRole, task: string): string {
     return `${AGENT_ROLES[role].promptPrefix}Task:\n${task}`;
+}
+
+export type PipelineStep = {
+    role: AgentRole;
+    output: string;
+};
+
+export function buildPipelinePrompt(
+    role: AgentRole,
+    task: string,
+    priorSteps: PipelineStep[]
+): string {
+    const priorContext =
+        priorSteps.length === 0
+            ? ""
+            : [
+                  "",
+                  "# Prior pipeline steps",
+                  ...priorSteps.map(
+                      (step) => `## ${AGENT_ROLES[step.role].label}\n${step.output || "(no output)"}`
+                  ),
+              ].join("\n");
+
+    return [
+        AGENT_ROLES[role].promptPrefix.trim(),
+        "You are a step in a sequential pipeline. Use prior agent outputs as context for your work.",
+        "",
+        `# Task\n${task}`,
+        priorContext,
+    ].join("\n");
 }
