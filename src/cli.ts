@@ -8,6 +8,7 @@ import { CliMode, parseCliMode } from './agent/modes.js';
 import { parseAgentRoles } from './agent/roles.js';
 import { startChat } from './commands/chat.js';
 import { startMultiChat } from './commands/multi-chat.js';
+import { runReview } from './commands/review.js';
 import { wakeUp } from './commands/wake-up.js';
 import { AGENT_ROLE_LIST } from './config/constant.js';
 
@@ -112,6 +113,36 @@ export function createCli() {
             requireApiKey();
             await runPipeline(task, {
                 roles: parseAgentRoles(opts.roles),
+                verbose: opts.verbose,
+                output: opts.output,
+            });
+        });
+
+
+    program
+        .command("review [paths...]")
+        .description("Review files or git changes with the reviewer agent")
+        .option("--staged", "Review staged git changes")
+        .option("--unstaged", "Review unstaged git changes")
+        .option("-f, --focus <area>", "Focus review on a specific area (e.g. error-handling)")
+        .option("--security", "Run an additional security audit pass")
+        .option("-o, --output <file>", "Save review markdown (default: .cursor-cli/reviews/)")
+        .option("-v, --verbose", "Show agent loop message types", false)
+        .action(async (paths: string[], opts: {
+            staged?: boolean;
+            unstaged?: boolean;
+            focus?: string;
+            security?: boolean;
+            output?: string;
+            verbose: boolean;
+        }) => {
+            requireApiKey();
+            await runReview({
+                paths,
+                staged: opts.staged,
+                unstaged: opts.unstaged,
+                focus: opts.focus,
+                security: opts.security,
                 verbose: opts.verbose,
                 output: opts.output,
             });
