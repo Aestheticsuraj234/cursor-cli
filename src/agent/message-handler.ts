@@ -4,7 +4,12 @@ import { stopSpinner } from "../ui/spinner.js";
 
 export type MessageHandlerOptions = {
     verbose?: boolean;
+    agentLabel?: string;
 };
+
+function prefix(label: string | undefined, text: string): string {
+    return label ? fmt.agentTag(label, text) : text;
+}
 
 function contentToString(content: unknown): string {
     if (typeof content === "string") return content;
@@ -37,7 +42,7 @@ function extractToolNames(content: unknown): string[] {
 
 
 export function handleMessage(message: SDKMessage, options: MessageHandlerOptions = {}): void {
-    const { verbose = false } = options;
+    const { verbose = false, agentLabel } = options;
 
     if (verbose) {
         console.log(fmt.dim(`[${message.type}]`));
@@ -46,12 +51,12 @@ export function handleMessage(message: SDKMessage, options: MessageHandlerOption
     switch (message.type) {
         case "system":
             if (message.subtype === "init") {
-                fmt.system(
+                console.log(prefix(agentLabel, fmt.system(
                     `Session started · model: ${message.model} · id: ${message.session_id.slice(0, 8)}…`
-                )
+                )));
             }
             else if (message.subtype === "compact_boundary") {
-                console.log(fmt.system("Context compacted — older history summarized"));
+                console.log(prefix(agentLabel, fmt.system("Context compacted — older history summarized")));
             }
             break;
 
@@ -61,11 +66,11 @@ export function handleMessage(message: SDKMessage, options: MessageHandlerOption
             const tools = extractToolNames(content);
 
             if (text.trim()) {
-                console.log(fmt.assistant(text.trim()));
+                console.log(prefix(agentLabel, fmt.assistant(text.trim())));
             }
 
             for (const tool of tools) {
-                console.log(fmt.tool(`  → ${tool}`));
+                console.log(prefix(agentLabel, fmt.tool(`  → ${tool}`)));
             }
             break;
 
@@ -73,7 +78,7 @@ export function handleMessage(message: SDKMessage, options: MessageHandlerOption
             if (message.parent_tool_use_id) {
                 const result = contentToString(message.message.content);
                 if (result) {
-                    console.log(fmt.toolResult(`  ← ${truncate(result.trim(), 120)}`));
+                    console.log(prefix(agentLabel, fmt.toolResult(`  ← ${truncate(result.trim(), 120)}`)));
                 }
             }
             break;
@@ -89,20 +94,26 @@ export function handleMessage(message: SDKMessage, options: MessageHandlerOption
 
             if (message.subtype === "success") {
                 if (message.result?.trim()) {
-                    console.log(fmt.success("\n" + message.result.trim()));
+                    console.log(prefix(agentLabel, fmt.success("\n" + message.result.trim())));
                 }
 
                 console.log(
-                    fmt.dim(
-                        `Done · ${message.num_turns} turns · $${message.total_cost_usd.toFixed(4)}`
+                    prefix(
+                        agentLabel,
+                        fmt.dim(
+                            `Done · ${message.num_turns} turns · $${message.total_cost_usd.toFixed(4)}`
+                        )
                     )
                 );
             }
             else {
-                console.log(fmt.error(`Stopped: ${message.subtype}`));
+                console.log(prefix(agentLabel, fmt.error(`Stopped: ${message.subtype}`)));
                 console.log(
-                    fmt.dim(
-                        `${message.num_turns} turns · $${message.total_cost_usd.toFixed(4)}`
+                    prefix(
+                        agentLabel,
+                        fmt.dim(
+                            `${message.num_turns} turns · $${message.total_cost_usd.toFixed(4)}`
+                        )
                     )
                 );
             }

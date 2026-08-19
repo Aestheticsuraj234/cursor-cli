@@ -14,3 +14,12 @@ export const SLASH_COMMANDS = [
   { command: "/context", description: "Show context window usage" },
   { command: "/exit", description: "End the chat session" },
 ] as const;
+
+export const MULTI_SLASH_COMMANDS = [
+  { command: "/spawn <role>", description: "Spawn researcher|planner|coder|reviewer" },
+  { command: "/agents", description: "List spawned agents and active agent" },
+  { command: "/switch <id>", description: "Route messages to a specific agent" },
+  { command: "/delegate <role> <task>", description: "One-shot task to a specialist agent" },
+] as const;
+
+export const AGENT_ROLE_LIST = "researcher | planner | coder | reviewer";

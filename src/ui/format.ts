@@ -1,4 +1,12 @@
 import chalk from "chalk";
+import type { AgentRole } from "../agent/roles.js";
+
+const AGENT_COLORS: Record<AgentRole, (text: string) => string> = {
+    researcher: chalk.blue,
+    planner: chalk.magenta,
+    coder: chalk.green,
+    reviewer: chalk.yellow,
+};
 
 export const fmt = {
   system: (text: string) => chalk.gray(text),
@@ -10,6 +18,9 @@ export const fmt = {
   dim: (text: string) => chalk.dim(text),
   label: (text: string) => chalk.bold.white(text),
   mode: (text: string) => chalk.magenta(text),
+  multi: (text: string) => chalk.bold.cyan(text),
+  agent: (role: AgentRole, text: string) => AGENT_COLORS[role](text),
+  agentTag: (label: string, text: string) => chalk.bold(`[${label}]`) + " " + text,
 };
 
 export function truncate(text: string, max = 200): string {
