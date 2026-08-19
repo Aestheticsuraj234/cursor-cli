@@ -203,6 +203,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  cursor-cli: 'link:'
+
 importers:
 
   .:
@@ -228,6 +231,9 @@ importers:
       commander:
         specifier: ^15.0.0
         version: 15.0.0
+      cursor-cli:
+        specifier: 'link:'
+        version: 'link:'
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
