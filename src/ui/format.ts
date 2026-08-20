@@ -22,6 +22,7 @@ export const fmt = {
   pipeline: (text: string) => chalk.bold.blue(text),
   review: (text: string) => chalk.bold.yellow(text),
   commit: (text: string) => chalk.bold.green(text),
+  explain: (text: string) => chalk.bold.magenta(text),
   agent: (role: AgentRole, text: string) => AGENT_COLORS[role](text),
   agentTag: (label: string, text: string) => chalk.bold(`[${label}]`) + " " + text,
 };

@@ -10,6 +10,8 @@ import { startChat } from './commands/chat.js';
 import { startMultiChat } from './commands/multi-chat.js';
 import { runReview } from './commands/review.js';
 import { runCommit } from './commands/commit.js';
+import { runExplain } from './commands/explain.js';
+import { parseExplainDepth } from './agent/explain-context.js';
 import { wakeUp } from './commands/wake-up.js';
 import { AGENT_ROLE_LIST } from './config/constant.js';
 
@@ -175,6 +177,40 @@ export function createCli() {
                 apply: opts.apply,
                 output: opts.output,
                 verbose: opts.verbose,
+            });
+        });
+
+
+    program
+        .command("explain [paths...]")
+        .description("Explain files or git changes in plain language")
+        .option("--staged", "Explain staged git changes")
+        .option("--unstaged", "Explain unstaged git changes")
+        .option("-d, --depth <level>", "beginner | detailed", "detailed")
+        .option("-q, --question <text>", "Ask a specific question about the code")
+        .option("-o, --output <file>", "Save explanation markdown (default: .cursor-cli/explanations/)")
+        .option("-v, --verbose", "Show agent loop message types", false)
+        .action(async (paths: string[], opts: {
+            staged?: boolean;
+            unstaged?: boolean;
+            depth: string;
+            question?: string;
+            output?: string;
+            verbose: boolean;
+        }) => {
+            requireApiKey();
+            const depth = parseExplainDepth(opts.depth);
+            if (!depth) {
+                throw new Error(`Invalid depth "${opts.depth}". Use beginner or detailed.`);
+            }
+            await runExplain({
+                paths,
+                staged: opts.staged,
+                unstaged: opts.unstaged,
+                depth,
+                question: opts.question,
+                verbose: opts.verbose,
+                output: opts.output,
             });
         });
 
