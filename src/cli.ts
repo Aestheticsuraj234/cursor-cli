@@ -9,6 +9,7 @@ import { parseAgentRoles } from './agent/roles.js';
 import { startChat } from './commands/chat.js';
 import { startMultiChat } from './commands/multi-chat.js';
 import { runReview } from './commands/review.js';
+import { runCommit } from './commands/commit.js';
 import { wakeUp } from './commands/wake-up.js';
 import { AGENT_ROLE_LIST } from './config/constant.js';
 
@@ -145,6 +146,35 @@ export function createCli() {
                 security: opts.security,
                 verbose: opts.verbose,
                 output: opts.output,
+            });
+        });
+
+
+    program
+        .command("commit")
+        .description("Generate a commit message from git changes")
+        .option("--staged", "Use staged changes (default)", true)
+        .option("--unstaged", "Use unstaged changes instead")
+        .option("--hint <text>", "Hint for the commit message (e.g. 'fix login bug')")
+        .option("--apply", "Run git commit with the generated message")
+        .option("-o, --output <file>", "Save message to a file")
+        .option("-v, --verbose", "Show agent loop message types", false)
+        .action(async (opts: {
+            staged?: boolean;
+            unstaged?: boolean;
+            hint?: string;
+            apply?: boolean;
+            output?: string;
+            verbose: boolean;
+        }) => {
+            requireApiKey();
+            await runCommit({
+                staged: opts.unstaged ? false : opts.staged,
+                unstaged: opts.unstaged,
+                hint: opts.hint,
+                apply: opts.apply,
+                output: opts.output,
+                verbose: opts.verbose,
             });
         });
 
