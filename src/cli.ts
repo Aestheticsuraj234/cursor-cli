@@ -11,6 +11,7 @@ import { startMultiChat } from './commands/multi-chat.js';
 import { runReview } from './commands/review.js';
 import { runCommit } from './commands/commit.js';
 import { runExplain } from './commands/explain.js';
+import { runFix } from './commands/fix.js';
 import { parseExplainDepth } from './agent/explain-context.js';
 import { wakeUp } from './commands/wake-up.js';
 import { AGENT_ROLE_LIST } from './config/constant.js';
@@ -211,6 +212,33 @@ export function createCli() {
                 question: opts.question,
                 verbose: opts.verbose,
                 output: opts.output,
+            });
+        });
+
+
+    program
+        .command("fix [paths...]")
+        .description("Fix issues in files or git changes using the coder agent")
+        .option("--staged", "Fix issues in staged git changes")
+        .option("--unstaged", "Fix issues in unstaged git changes")
+        .option("-i, --issue <text>", "Describe what to fix (e.g. 'add error handling')")
+        .option("--dry-run", "Plan fixes without editing files")
+        .option("-v, --verbose", "Show agent loop message types", false)
+        .action(async (paths: string[], opts: {
+            staged?: boolean;
+            unstaged?: boolean;
+            issue?: string;
+            dryRun?: boolean;
+            verbose: boolean;
+        }) => {
+            requireApiKey();
+            await runFix({
+                paths,
+                staged: opts.staged,
+                unstaged: opts.unstaged,
+                issue: opts.issue,
+                dryRun: opts.dryRun,
+                verbose: opts.verbose,
             });
         });
 
