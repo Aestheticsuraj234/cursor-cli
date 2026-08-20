@@ -2,3 +2,4 @@
 import { createCli } from "./cli.js";
 
 createCli().parse(process.argv);
+console.log("Hello World");
